@@ -1,0 +1,484 @@
+1.包的简介：data.table是⼀个什么包，⼀般⽤来做什么？
+
+`data.table`是一个R包，提供了增强版的R文件，是用于在R中存储数据的标准数据结构。
+
+和第三次作业中最后⼀题所讲到的那个数据结构有什么区别和联系？`data.table相对更加泛用，适合大数据`
+
+可以⽤什么函数将那个数据结构data.table格式进⾏转换？请利⽤mtcars这 个数据集进⾏实际操作。
+<!-- mtcars_dt <- as.data.table(mtcars) -->
+<!-- mtcars_df <- as.data.frame(mtcars_dt) -->
+<!-- print(class(mtcars_dt)) -->
+<!-- print(class(mtcars_df)) -->
+<!-- [1] "data.table" "data.frame" -->
+<!-- [1] "data.frame" -->
+2. 数据的导入和导出问题：data.table⽤以读取外部数据的函数是哪⼀个？
+<!-- fread() -->
+可以⽤来读取什么格式的数据？
+<!-- CSV、TSV、固定宽度格式 -->
+ 将data.table格式保存到外部的函数是哪⼀个？<!--fwrite() -->
+请利⽤mtcars这个数据集进⾏实际操作。
+<!-- fwrite(mtcars_dt, "mtcars_temp.csv") -->
+<!-- mtcars_loaded <- fread("mtcars_temp.csv") -->
+<!-- print(head(mtcars_loaded)) -->
+<!-- file.remove("mtcars_temp.csv") -->
+<!--      mpg   cyl  disp    hp  drat    wt  qsec    vs -->
+<!--    <num> <int> <num> <int> <num> <num> <num> <int> -->
+<!-- 1:  21.0     6   160   110  3.90 2.620 16.46     0 -->
+<!-- 2:  21.0     6   160   110  3.90 2.875 17.02     0 -->
+<!-- 3:  22.8     4   108    93  3.85 2.320 18.61     1 -->
+<!-- 4:  21.4     6   258   110  3.08 3.215 19.44     1 -->
+<!-- 5:  18.7     8   360   175  3.15 3.440 17.02     0 -->
+<!-- 6:  18.1     6   225   105  2.76 3.460 20.22     1 -->
+<!--       am  gear  carb -->
+<!--    <int> <int> <int> -->
+<!-- 1:     1     4     4 -->
+<!-- 2:     1     4     4 -->
+<!-- 3:     1     4     1 -->
+<!-- 4:     0     3     1 -->
+<!-- 5:     0     3     2 -->
+<!-- 6:     0     3     1 -->
+3. 基本语法：data.table的基本语法[i, j, by]当中，i、j、by分别表⽰什么含义？他们都分别可以进⾏什么操作？
+<!-- i行筛选 -->
+<!-- j列操作 -->
+<!-- by分组 -->
+三者同时存在时运⾏的顺序是什么？<!-- 先i,再by最后j-->
+请利⽤mtcars这个数据集进⾏实际操作。
+> result <- mtcars_dt[mpg > 20, .(avg_hp = mean(hp)), by = am]
+> print(result)
+      am avg_hp
+   <num>  <num>
+1:     1   87.5
+2:     0   91.0
+
+4. 变量引⽤：如果要在data.table中要对某个变量进⾏操作，如何引⽤这个变量？请利⽤mtcars这个数据集，对其中任意两个变量进⾏引⽤，并对⼆者做加法，给出代码。
+> mtcars_dt[, mpg + hp]
+ [1] 131.0 131.0 115.8 131.4 193.7 123.1 259.3  86.4
+ [9] 117.8 142.2 140.8 196.4 197.3 195.2 215.4 225.4
+[17] 244.7  98.4  82.4  98.9 118.5 165.5 165.2 258.3
+[25] 194.2  93.3 117.0 143.4 279.8 194.7 350.0 130.4
+> mtcars_dt[, .(sum_mpg_hp = mpg + hp)]
+    sum_mpg_hp
+         <num>
+ 1:      131.0
+ 2:      131.0
+ 3:      115.8
+ 4:      131.4
+ 5:      193.7
+ 6:      123.1
+ 7:      259.3
+ 8:       86.4
+ 9:      117.8
+10:      142.2
+11:      140.8
+12:      196.4
+13:      197.3
+14:      195.2
+15:      215.4
+16:      225.4
+17:      244.7
+18:       98.4
+19:       82.4
+20:       98.9
+21:      118.5
+22:      165.5
+23:      165.2
+24:      258.3
+25:      194.2
+26:       93.3
+27:      117.0
+28:      143.4
+29:      279.8
+30:      194.7
+31:      350.0
+32:      130.4
+    sum_mpg_hp
+> mtcars_dt[, .(mpg_plus_hp = mpg + hp)][1:5]
+   mpg_plus_hp
+         <num>
+1:       131.0
+2:       131.0
+3:       115.8
+4:       131.4
+5:       193.7
+
+ 5. 数据筛选I：data.table中如何进⾏⾏筛选？i进⾏⾏筛选⼀般需要在i中给定的数据格式是什么（精确到向量的基本格式）？如何进⾏列筛选？data.frame格式的列筛选的语法如何？data.frame当中的列筛选⽅式能不能⽤在data.table当中？
+ <!-- 可以 -->
+ 请利⽤mtcars这个数据集进⾏实际操作。
+
+> result_i <- mtcars_dt[mpg > 20]
+> print(result_i)
+      mpg   cyl  disp    hp  drat    wt  qsec    vs
+    <num> <num> <num> <num> <num> <num> <num> <num>
+ 1:  21.0     6 160.0   110  3.90 2.620 16.46     0
+ 2:  21.0     6 160.0   110  3.90 2.875 17.02     0
+ 3:  22.8     4 108.0    93  3.85 2.320 18.61     1
+ 4:  21.4     6 258.0   110  3.08 3.215 19.44     1
+ 5:  24.4     4 146.7    62  3.69 3.190 20.00     1
+ 6:  22.8     4 140.8    95  3.92 3.150 22.90     1
+ 7:  32.4     4  78.7    66  4.08 2.200 19.47     1
+ 8:  30.4     4  75.7    52  4.93 1.615 18.52     1
+ 9:  33.9     4  71.1    65  4.22 1.835 19.90     1
+10:  21.5     4 120.1    97  3.70 2.465 20.01     1
+11:  27.3     4  79.0    66  4.08 1.935 18.90     1
+12:  26.0     4 120.3    91  4.43 2.140 16.70     0
+13:  30.4     4  95.1   113  3.77 1.513 16.90     1
+14:  21.4     4 121.0   109  4.11 2.780 18.60     1
+       am  gear  carb
+    <num> <num> <num>
+ 1:     1     4     4
+ 2:     1     4     4
+ 3:     1     4     1
+ 4:     0     3     1
+ 5:     0     4     2
+ 6:     0     4     2
+ 7:     1     4     1
+ 8:     1     4     2
+ 9:     1     4     1
+10:     0     3     1
+11:     1     4     1
+12:     1     5     2
+13:     1     5     2
+14:     1     4     2
+> result_j <- mtcars_dt[, .(mpg)]
+> print(head(result_j))
+     mpg
+   <num>
+1:  21.0
+2:  21.0
+3:  22.8
+4:  21.4
+5:  18.7
+6:  18.1
+> result_df_f <- mtcars_dt[, c("mpg")]
+> print(head(result_df_f))
+     mpg
+   <num>
+1:  21.0
+2:  21.0
+3:  22.8
+4:  21.4
+5:  18.7
+6:  18.1
+
+6. 数据筛选II：data.table当中，如果要将数据表中的某个变量（某列） 进⾏选取，最终选择出来的这⼀列变量还是⼀个data.table，应该⽤什么⽅式？最终如果选择出这⼀列变量，并⽣成⼀个向量，应该⽤哪种⽅式（只⽤⼀⾏操作）？请利⽤mtcars这个数据集进⾏实际操作。
+ result_2 <- mtcars_dt[, c("mpg")]
+> print(head(result_2))
+     mpg
+   <num>
+1:  21.0
+2:  21.0
+3:  22.8
+4:  21.4
+5:  18.7
+6:  18.1
+> 
+> e <- mtcars_dt[, mpg] 
+> print(class(e))
+[1] "numeric"
+
+7. 排序：data.table中，同时根据多个变量进⾏排序怎么做？如何进⾏升序和降序排列？在基本语法[i,j,by]三个部分当中哪些部分可以直接进⾏排序操作？在i中操作可不可以同时进⾏筛选和排序操作？
+请利⽤mtcars这个数据集进⾏实例操作。
+> c <- mtcars_dt[order(mpg)]
+> print(head(c))
+     mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
+   <num> <num> <num> <num> <num> <num> <num> <num> <num> <num> <num>
+1:  10.4     8   472   205  2.93 5.250 17.98     0     0     3     4
+2:  10.4     8   460   215  3.00 5.424 17.82     0     0     3     4
+3:  13.3     8   350   245  3.73 3.840 15.41     0     0     3     4
+4:  14.3     8   360   245  3.21 3.570 15.84     0     0     3     4
+5:  14.7     8   440   230  3.23 5.345 17.42     0     0     3     4
+6:  15.0     8   301   335  3.54 3.570 14.60     0     1     5     8
+
+> i <- mtcars_dt[order(mpg, -hp)]
+> print(head(i))
+     mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
+   <num> <num> <num> <num> <num> <num> <num> <num> <num> <num> <num>
+1:  10.4     8   460   215  3.00 5.424 17.82     0     0     3     4
+2:  10.4     8   472   205  2.93 5.250 17.98     0     0     3     4
+3:  13.3     8   350   245  3.73 3.840 15.41     0     0     3     4
+4:  14.3     8   360   245  3.21 3.570 15.84     0     0     3     4
+5:  14.7     8   440   230  3.23 5.345 17.42     0     0     3     4
+6:  15.0     8   301   335  3.54 3.570 14.60     0     1     5     8
+> t <- mtcars_dt[mpg > 20][order(-hp)]
+> print(t)
+      mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
+    <num> <num> <num> <num> <num> <num> <num> <num> <num> <num> <num>
+ 1:  30.4     4  95.1   113  3.77 1.513 16.90     1     1     5     2
+ 2:  21.0     6 160.0   110  3.90 2.620 16.46     0     1     4     4
+ 3:  21.0     6 160.0   110  3.90 2.875 17.02     0     1     4     4
+ 4:  21.4     6 258.0   110  3.08 3.215 19.44     1     0     3     1
+ 5:  21.4     4 121.0   109  4.11 2.780 18.60     1     1     4     2
+ 6:  21.5     4 120.1    97  3.70 2.465 20.01     1     0     3     1
+ 7:  22.8     4 140.8    95  3.92 3.150 22.90     1     0     4     2
+ 8:  22.8     4 108.0    93  3.85 2.320 18.61     1     1     4     1
+ 9:  26.0     4 120.3    91  4.43 2.140 16.70     0     1     5     2
+10:  32.4     4  78.7    66  4.08 2.200 19.47     1     1     4     1
+11:  27.3     4  79.0    66  4.08 1.935 18.90     1     1     4     1
+12:  33.9     4  71.1    65  4.22 1.835 19.90     1     1     4     1
+13:  24.4     4 146.7    62  3.69 3.190 20.00     1     0     4     2
+14:  30.4     4  75.7    52  4.93 1.615 18.52     1     1     4     2
+
+8. 添加或更改列数据：data.table当中，添加或更改⼀列数据，需要⽤到什么函数？如果需要同时添加多列数据需要怎么做（请在⼀⾏代码中实现）？请利⽤mtcars这个数据集进⾏实际操作，添加或更改任意列的数据。
+> mtcars_dt[, mpg_per_hp := mpg / hp]
+> print(head(mtcars_dt))
+     mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb mpg_per_hp
+   <num> <num> <num> <num> <num> <num> <num> <num> <num> <num> <num>      <num>
+1:  21.0     6   160   110  3.90 2.620 16.46     0     1     4     4  0.1909091
+2:  21.0     6   160   110  3.90 2.875 17.02     0     1     4     4  0.1909091
+3:  22.8     4   108    93  3.85 2.320 18.61     1     1     4     1  0.2451613
+4:  21.4     6   258   110  3.08 3.215 19.44     1     0     3     1  0.1945455
+5:  18.7     8   360   175  3.15 3.440 17.02     0     0     3     2  0.1068571
+6:  18.1     6   225   105  2.76 3.460 20.22     1     0     3     1  0.1723810
+> mtcars_dt[, mpg_per_hp := mpg / hp]
+> print(head(mtcars_dt))
+     mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb mpg_per_hp
+   <num> <num> <num> <num> <num> <num> <num> <num> <num> <num> <num>      <num>
+1:  21.0     6   160   110  3.90 2.620 16.46     0     1     4     4  0.1909091
+2:  21.0     6   160   110  3.90 2.875 17.02     0     1     4     4  0.1909091
+3:  22.8     4   108    93  3.85 2.320 18.61     1     1     4     1  0.2451613
+4:  21.4     6   258   110  3.08 3.215 19.44     1     0     3     1  0.1945455
+5:  18.7     8   360   175  3.15 3.440 17.02     0     0     3     2  0.1068571
+6:  18.1     6   225   105  2.76 3.460 20.22     1     0     3     1  0.1723810
+> mtcars_dt[, `:=`(
++   km_per_l = mpg * 0.425144,
++   power_weight = hp / wt
++ )]
+> print(head(mtcars_dt))
+     mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb mpg_per_hp
+   <num> <num> <num> <num> <num> <num> <num> <num> <num> <num> <num>      <num>
+1:  21.0     6   160   110  3.90 2.620 16.46     0     1     4     4  0.1909091
+2:  21.0     6   160   110  3.90 2.875 17.02     0     1     4     4  0.1909091
+3:  22.8     4   108    93  3.85 2.320 18.61     1     1     4     1  0.2451613
+4:  21.4     6   258   110  3.08 3.215 19.44     1     0     3     1  0.1945455
+5:  18.7     8   360   175  3.15 3.440 17.02     0     0     3     2  0.1068571
+6:  18.1     6   225   105  2.76 3.460 20.22     1     0     3     1  0.1723810
+   km_per_l power_weight
+      <num>        <num>
+1: 8.928024     41.98473
+2: 8.928024     38.26087
+3: 9.693283     40.08621
+4: 9.098082     34.21462
+5: 7.950193     50.87209
+6: 7.695106     30.34682
+
+> mtcars_dt[, mpg := round(mpg, 1)]
+> print(head(mtcars_dt))
+     mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb mpg_per_hp
+   <num> <num> <num> <num> <num> <num> <num> <num> <num> <num> <num>      <num>
+1:  21.0     6   160   110  3.90 2.620 16.46     0     1     4     4  0.1909091
+2:  21.0     6   160   110  3.90 2.875 17.02     0     1     4     4  0.1909091
+3:  22.8     4   108    93  3.85 2.320 18.61     1     1     4     1  0.2451613
+4:  21.4     6   258   110  3.08 3.215 19.44     1     0     3     1  0.1945455
+5:  18.7     8   360   175  3.15 3.440 17.02     0     0     3     2  0.1068571
+6:  18.1     6   225   105  2.76 3.460 20.22     1     0     3     1  0.1723810
+   km_per_l power_weight
+      <num>        <num>
+1: 8.928024     41.98473
+2: 8.928024     38.26087
+3: 9.693283     40.08621
+4: 9.098082     34.21462
+5: 7.950193     50.87209
+6: 7.695106     30.34682
+
+9. 分组I：什么是分组操作？by与keyby有什么区别？data.table中如何进⾏依据多个变量进⾏分组后的组内求和操作？请请利⽤mtcars这个数据集，并结合上⼀题的⽅式，进⾏该操作⽰例。
+> result_by <- mtcars_dt[, .(avg_hp = mean(hp)), by = .(cyl, am)]
+> print(result_by)
+     cyl    am    avg_hp
+   <num> <num>     <num>
+1:     6     1 131.66667
+2:     4     1  81.87500
+3:     6     0 115.25000
+4:     8     0 194.16667
+5:     4     0  84.66667
+6:     8     1 299.50000
+> result_keyby <- mtcars_dt[, .(avg_hp = mean(hp)), keyby = .(cyl, am)]
+> print(result_keyby)
+Key: <cyl, am>
+     cyl    am    avg_hp
+   <num> <num>     <num>
+1:     4     0  84.66667
+2:     4     1  81.87500
+3:     6     0 115.25000
+4:     6     1 131.66667
+5:     8     0 194.16667
+6:     8     1 299.50000
+
+10. 分组II：在by中如何将分组和筛选进⾏组合操作？请请利⽤mtcars这个数据集，并结合上⼀题的⽅式，进⾏操作⽰例。
+> result_combo <- mtcars_dt[hp > 100, 
++                           .(count = .N, 
++                             avg_mpg = mean(mpg), 
++                             avg_wt = mean(wt)), 
++                           by = cyl]
+> print(result_combo)
+     cyl count  avg_mpg   avg_wt
+   <num> <int>    <num>    <num>
+1:     6     7 19.74286 3.117143
+2:     8    14 15.10000 3.999214
+3:     4     2 25.90000 2.146500
+
+11. 特殊函数I：.SD在data.table中表⽰什么？使⽤后会⽣成⼀个什么数据结构？经过分组操作以后⽣成的结构是怎样的？请利⽤mtcars这个数据集进⾏实例操作。
+> result_sd <- mtcars_dt[, lapply(.SD, mean), by = cyl, 
++                        .SDcols = c("mpg", "hp", "wt")]
+> print(result_sd)
+     cyl      mpg        hp       wt
+   <num>    <num>     <num>    <num>
+1:     6 19.74286 122.28571 3.117143
+2:     4 26.66364  82.63636 2.285727
+3:     8 15.10000 209.21429 3.999214
+
+12. 特殊函数II：.N在data.table当中表⽰什么？使⽤后会⽣成⼀个什么数据结构？经过分组操作以后⽣成的结构是怎样的？请利⽤mtcars这个数据集进⾏实例操作。
+> total_count <- mtcars_dt[, .N]
+> print(paste("总观测数:", total_count))
+[1] "总观测数: 32"
+> # 按分组计数
+> count_by_group <- mtcars_dt[, .N, by = .(cyl, am)]
+> print(count_by_group)
+     cyl    am     N
+   <num> <num> <int>
+1:     6     1     3
+2:     4     1     8
+3:     6     0     4
+4:     8     0    12
+5:     4     0     3
+6:     8     1     2
+> # 结合筛选的分组计数
+> filtered_count <- mtcars_dt[mpg > 20, .N, by = cyl]
+> print(filtered_count)
+     cyl     N
+   <num> <int>
+1:     6     3
+2:     4    11
+
+13. 特殊函数III：data.table当中的chaining是⼀种什么操作？⼀般⽤在什么时候？如果我想针对mtcars中的数据先筛选出vs和am都为1的观测，然后再分别计算另外两个变量mpg和cyl的平均值，并⽣成mpg_aver和cyl_aver两个变量，请利⽤chaining的⽅式给出代码。
+> result_chain2 <- mtcars_dt[vs == 1 & am == 1,
++                            .(mpg_aver = mean(mpg), 
++                              cyl_aver = mean(cyl))]
+> print(result_chain2)
+   mpg_aver cyl_aver
+      <num>    <num>
+1: 28.37143        4
+
+14. join操作（横向合并）：如果两张表存在两个相同的共同变量，要进⾏join的合并操作，需要⽤到什么语法？有哪两种操作⽅式？两种操作⽅式存在什么区别？
+> dt1 <- mtcars_dt[1:10, .(car = rownames(mtcars)[1:10], mpg, cyl)]
+> dt2 <- mtcars_dt[5:15, .(car = rownames(mtcars)[5:15], hp, wt)]
+> print(dt1)
+                  car   mpg   cyl
+               <char> <num> <num>
+ 1:         Mazda RX4  21.0     6
+ 2:     Mazda RX4 Wag  21.0     6
+ 3:        Datsun 710  22.8     4
+ 4:    Hornet 4 Drive  21.4     6
+ 5: Hornet Sportabout  18.7     8
+ 6:           Valiant  18.1     6
+ 7:        Duster 360  14.3     8
+ 8:         Merc 240D  24.4     4
+ 9:          Merc 230  22.8     4
+10:          Merc 280  19.2     6
+> print(dt2)
+                   car    hp    wt
+                <char> <num> <num>
+ 1:  Hornet Sportabout   175  3.44
+ 2:            Valiant   105  3.46
+ 3:         Duster 360   245  3.57
+ 4:          Merc 240D    62  3.19
+ 5:           Merc 230    95  3.15
+ 6:           Merc 280   123  3.44
+ 7:          Merc 280C   123  3.44
+ 8:         Merc 450SE   180  4.07
+ 9:         Merc 450SL   180  3.73
+10:        Merc 450SLC   180  3.78
+11: Cadillac Fleetwood   205  5.25
+> join_merge <- merge(dt1, dt2, by = "car", all = TRUE)
+> print(join_merge)
+Key: <car>
+                   car   mpg   cyl    hp    wt
+                <char> <num> <num> <num> <num>
+ 1: Cadillac Fleetwood    NA    NA   205  5.25
+ 2:         Datsun 710  22.8     4    NA    NA
+ 3:         Duster 360  14.3     8   245  3.57
+ 4:     Hornet 4 Drive  21.4     6    NA    NA
+ 5:  Hornet Sportabout  18.7     8   175  3.44
+ 6:          Mazda RX4  21.0     6    NA    NA
+ 7:      Mazda RX4 Wag  21.0     6    NA    NA
+ 8:           Merc 230  22.8     4    95  3.15
+ 9:          Merc 240D  24.4     4    62  3.19
+10:           Merc 280  19.2     6   123  3.44
+11:          Merc 280C    NA    NA   123  3.44
+12:         Merc 450SE    NA    NA   180  4.07
+13:         Merc 450SL    NA    NA   180  3.73
+14:        Merc 450SLC    NA    NA   180  3.78
+15:            Valiant  18.1     6   105  3.46
+> setkey(dt1, car)
+> setkey(dt2, car)
+> join_left <- dt1[dt2]
+> print(join_left)
+Key: <car>
+                   car   mpg   cyl    hp    wt
+                <char> <num> <num> <num> <num>
+ 1: Cadillac Fleetwood    NA    NA   205  5.25
+ 2:         Duster 360  14.3     8   245  3.57
+ 3:  Hornet Sportabout  18.7     8   175  3.44
+ 4:           Merc 230  22.8     4    95  3.15
+ 5:          Merc 240D  24.4     4    62  3.19
+ 6:           Merc 280  19.2     6   123  3.44
+ 7:          Merc 280C    NA    NA   123  3.44
+ 8:         Merc 450SE    NA    NA   180  4.07
+ 9:         Merc 450SL    NA    NA   180  3.73
+10:        Merc 450SLC    NA    NA   180  3.78
+11:            Valiant  18.1     6   105  3.46
+
+15. bind操作（竖向合并）：如果两张表要进⾏bind操作并需要⽤到什么函数（请⼀定使⽤data.table当中的函数）？请把mtcars数据集当中的所有数据都+1，⽣成另⼀个数据集，并于原来的数据集进⾏合并。
+> mtcars_plus1 <- copy(mtcars_dt)
+> numeric_cols <- names(mtcars_plus1)[sapply(mtcars_plus1, is.numeric)]
+> mtcars_plus1[, (numeric_cols) := lapply(.SD, function(x) x + 1), 
++              .SDcols = numeric_cols]
+> combined <- rbindlist(list(mtcars_dt, mtcars_plus1), fill = TRUE)
+> print(dim(combined))
+[1] 64 14
+> print(head(combined))
+     mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb mpg_per_hp
+   <num> <num> <num> <num> <num> <num> <num> <num> <num> <num> <num>      <num>
+1:  21.0     6   160   110  3.90 2.620 16.46     0     1     4     4  0.1909091
+2:  21.0     6   160   110  3.90 2.875 17.02     0     1     4     4  0.1909091
+3:  22.8     4   108    93  3.85 2.320 18.61     1     1     4     1  0.2451613
+4:  21.4     6   258   110  3.08 3.215 19.44     1     0     3     1  0.1945455
+5:  18.7     8   360   175  3.15 3.440 17.02     0     0     3     2  0.1068571
+6:  18.1     6   225   105  2.76 3.460 20.22     1     0     3     1  0.1723810
+   km_per_l power_weight
+      <num>        <num>
+1: 8.928024     41.98473
+2: 8.928024     38.26087
+3: 9.693283     40.08621
+4: 9.098082     34.21462
+5: 7.950193     50.87209
+6: 7.695106     30.34682
+
+16. melt与cast操作：什么是melt与cast操作？请利⽤mtcars这个数据集进⾏针对任意变量的melt与cast实际操作。
+> melted <- melt(mtcars_dt, 
++                id.vars = c("cyl", "am"),
++                measure.vars = c("mpg", "hp", "wt"),
++                variable.name = "metric", 
++                value.name = "value")
+> print(head(melted))
+     cyl    am metric value
+   <num> <num> <fctr> <num>
+1:     6     1    mpg  21.0
+2:     6     1    mpg  21.0
+3:     4     1    mpg  22.8
+4:     6     0    mpg  21.4
+5:     8     0    mpg  18.7
+6:     6     0    mpg  18.1
+> casted <- dcast(melted, cyl + am ~ metric, 
++                 value.var = "value", 
++                 fun.aggregate = mean)
+> print(casted)
+Key: <cyl, am>
+     cyl    am      mpg        hp       wt
+   <num> <num>    <num>     <num>    <num>
+1:     4     0 22.90000  84.66667 2.935000
+2:     4     1 28.07500  81.87500 2.042250
+3:     6     0 19.12500 115.25000 3.388750
+4:     6     1 20.56667 131.66667 2.755000
+5:     8     0 15.05000 194.16667 4.104083
+6:     8     1 15.40000 299.50000 3.370000
+>
